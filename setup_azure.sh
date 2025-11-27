@@ -9,7 +9,7 @@ set -e
 # Configuration
 APP_NAME="msp-validator-$RANDOM" # Unique name
 RESOURCE_GROUP="rg-msp-validator"
-LOCATION="eastus" # Change if you hit quota limits in specific regions
+LOCATION="australiaeast" # Change if you hit quota limits in specific regions
 REPO_URL="https://github.com/davidfleischmann/UserValidation"
 BRANCH="main"
 SKU="F1" # Using Free tier to avoid quota limits. Use "B1" for Basic if you have quota.
