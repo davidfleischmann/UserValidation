@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Azure Setup Script for MSP Validator App
+# Prerequisites: Azure CLI installed (brew install azure-cli) and logged in (az login)
+
+# Configuration
+APP_NAME="msp-validator-$RANDOM" # Unique name
+RESOURCE_GROUP="rg-msp-validator"
+LOCATION="eastus" # Change as needed
+REPO_URL="https://github.com/davidfleischmann/UserValidation"
+BRANCH="main"
+
+echo "🚀 Starting Azure Setup..."
+echo "--------------------------------"
+echo "App Name: $APP_NAME"
+echo "Resource Group: $RESOURCE_GROUP"
+echo "Region: $LOCATION"
+echo "--------------------------------"
+
+# 1. Create Resource Group
+echo "📦 Creating Resource Group..."
+az group create --name $RESOURCE_GROUP --location $LOCATION
+
+# 2. Create App Service Plan (Linux, Basic B1 for Always On)
+echo "🏗️ Creating App Service Plan..."
+az appservice plan create --name "plan-$APP_NAME" \
+    --resource-group $RESOURCE_GROUP \
+    --sku B1 \
+    --is-linux
+
+# 3. Create Web App
+echo "🌐 Creating Web App..."
+az webapp create --name $APP_NAME \
+    --resource-group $RESOURCE_GROUP \
+    --plan "plan-$APP_NAME" \
+    --runtime "NODE:20-lts"
+
+# 4. Configure Startup Command
+echo "⚙️ Configuring Startup Command..."
+az webapp config set --resource-group $RESOURCE_GROUP \
+    --name $APP_NAME \
+    --startup-file "npm start"
+
+# 5. Configure Deployment from GitHub
+echo "🔗 Connecting to GitHub..."
+az webapp deployment source config --name $APP_NAME \
+    --resource-group $RESOURCE_GROUP \
+    --repo-url $REPO_URL \
+    --branch $BRANCH \
+    --manual-integration # Uses simple git pull, for GitHub Actions remove this and set up separately
+
+echo "--------------------------------"
+echo "✅ Deployment Setup Complete!"
+echo "--------------------------------"
+echo "🌍 Your App URL: https://$APP_NAME.azurewebsites.net"
+echo ""
+echo "⚠️  IMPORTANT NEXT STEPS:"
+echo "1. Go to the Azure Portal or Entra Admin Center."
+echo "2. Update your App Registration Redirect URI to: https://$APP_NAME.azurewebsites.net/"
+echo "3. Update your src/config/auth-config.ts with this new URL if needed (optional)."
