@@ -35,29 +35,16 @@ az appservice plan create --name "plan-$APP_NAME" \
     --is-linux \
     --output none
 
-# 3. Create Web App
-echo "🌐 Creating Web App..."
+# 3. Create Web App & Configure Deployment
+echo "🌐 Creating Web App, Configuring Startup, and Connecting to GitHub..."
 az webapp create --name $APP_NAME \
     --resource-group $RESOURCE_GROUP \
     --plan "plan-$APP_NAME" \
     --runtime "NODE:20-lts" \
-    --output none
-
-# 4. Configure Startup Command
-echo "⚙️ Configuring Startup Command..."
-az webapp config set --resource-group $RESOURCE_GROUP \
-    --name $APP_NAME \
     --startup-file "npm start" \
+    --deployment-source-url $REPO_URL \
+    --deployment-source-branch $BRANCH \
     --output none
-
-# 5. Configure Deployment from GitHub
-echo "🔗 Connecting to GitHub..."
-az webapp deployment source config --name $APP_NAME \
-    --resource-group $RESOURCE_GROUP \
-    --repo-url $REPO_URL \
-    --branch $BRANCH \
-    --manual-integration \
-    --output none # Uses simple git pull, for GitHub Actions remove this and set up separately
 
 echo "--------------------------------"
 echo "✅ Deployment Setup Complete!"
