@@ -3,29 +3,35 @@
 # Azure Setup Script for MSP Validator App
 # Prerequisites: Azure CLI installed (brew install azure-cli) and logged in (az login)
 
+# Stop script on any error
+set -e
+
 # Configuration
 APP_NAME="msp-validator-$RANDOM" # Unique name
 RESOURCE_GROUP="rg-msp-validator"
-LOCATION="eastus" # Change as needed
+LOCATION="eastus" # Change if you hit quota limits in specific regions
 REPO_URL="https://github.com/davidfleischmann/UserValidation"
 BRANCH="main"
+SKU="F1" # Using Free tier to avoid quota limits. Use "B1" for Basic if you have quota.
 
 echo "🚀 Starting Azure Setup..."
 echo "--------------------------------"
 echo "App Name: $APP_NAME"
 echo "Resource Group: $RESOURCE_GROUP"
 echo "Region: $LOCATION"
+echo "SKU: $SKU"
 echo "--------------------------------"
 
 # 1. Create Resource Group
 echo "📦 Creating Resource Group..."
 az group create --name $RESOURCE_GROUP --location $LOCATION
 
-# 2. Create App Service Plan (Linux, Basic B1 for Always On)
-echo "🏗️ Creating App Service Plan..."
+# 2. Create App Service Plan
+echo "🏗️ Creating App Service Plan ($SKU)..."
+# Note: F1 (Free) does not support 'Always On', so sessions may reset if the app sleeps.
 az appservice plan create --name "plan-$APP_NAME" \
     --resource-group $RESOURCE_GROUP \
-    --sku B1 \
+    --sku $SKU \
     --is-linux
 
 # 3. Create Web App
