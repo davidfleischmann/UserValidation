@@ -69,6 +69,7 @@ We provide an automated script to deploy this app to **Azure App Service** in th
     chmod +x setup_azure.sh
     ./setup_azure.sh
     ```
+    *This script will provision resources and **automatically enable Continuous Deployment** from your GitHub repository.*
 3.  **Post-Deployment**: Update your App Registration Redirect URI with the URL provided by the script.
 
 *See [deployment_guide.md](deployment_guide.md) for full details.*
