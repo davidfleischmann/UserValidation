@@ -60,6 +60,19 @@ npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## ☁️ Deployment (Azure)
+We provide an automated script to deploy this app to **Azure App Service** in the **Australia East** region.
+
+1.  **Prerequisites**: Install Azure CLI (`brew install azure-cli`) and login (`az login`).
+2.  **Run Script**:
+    ```bash
+    chmod +x setup_azure.sh
+    ./setup_azure.sh
+    ```
+3.  **Post-Deployment**: Update your App Registration Redirect URI with the URL provided by the script.
+
+*See [deployment_guide.md](deployment_guide.md) for full details.*
+
 ## 🛠️ Tech Stack
 *   **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
 *   **Language**: TypeScript
