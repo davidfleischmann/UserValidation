@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MSP User Validation Tool
 
-## Getting Started
+A secure, web-based utility for Level 1 MSP engineers to validate the identity of end-users using Microsoft Entra ID (formerly Azure AD) and Microsoft Authenticator.
 
-First, run the development server:
+![Project Status](https://img.shields.io/badge/status-active-success.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
+## 🎯 Problem Solved
+Helpdesk engineers often need to verify who they are talking to before resetting passwords or making account changes. Traditional methods (calling a manager, checking personal details) are slow or insecure.
+This tool allows an engineer to trigger a **Microsoft Authenticator** notification to the user's phone. If the user approves it, their identity is cryptographically verified.
+
+## ✨ Features
+
+### 1. Direct Validation (Passwordless Users)
+For users with **Passwordless Phone Sign-in** enabled.
+*   **Workflow**: The engineer enters the user's email.
+*   **Experience**: A number appears on the engineer's screen. The engineer reads it to the user. The user enters it into their Authenticator app.
+*   **Result**: Instant validation on the engineer's screen.
+
+### 2. Remote Validation (Hybrid / Password + MFA Users)
+For users who still use passwords or don't have passwordless enabled.
+*   **Workflow**: The engineer generates a unique **Verification Link**.
+*   **Experience**: The engineer sends the link to the user (chat/email). The user clicks it and signs in on *their own device*.
+*   **Result**: The engineer's screen automatically updates to "Verified" once the user successfully logs in.
+
+## 🚀 Getting Started
+
+### Prerequisites
+*   A Microsoft Entra ID (Azure AD) Tenant.
+*   Node.js 18+ installed.
+
+### Installation
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/davidfleischmann/UserValidation.git
+    cd UserValidation
+    ```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+
+### Configuration (Azure App Registration)
+1.  Register a new **Single Page Application (SPA)** in the [Microsoft Entra Admin Center](https://entra.microsoft.com/).
+2.  Set the **Redirect URI** to `http://localhost:3000/` (or your production URL).
+3.  Open `src/config/auth-config.ts` and update the `clientId` and `authority`:
+    ```typescript
+    export const msalConfig: Configuration = {
+        auth: {
+            clientId: "YOUR_CLIENT_ID",
+            authority: "https://login.microsoftonline.com/YOUR_TENANT_ID",
+            // ...
+        }
+    };
+    ```
+
+### Running the App
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
+*   **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+*   **Language**: TypeScript
+*   **Styling**: Tailwind CSS
+*   **Authentication**: MSAL React (`@azure/msal-react`)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔒 Security Note
+This application runs entirely client-side (SPA) for the Direct flow. The Remote flow uses a lightweight in-memory API to track session status. For production deployment, ensure the API state is backed by a database (Redis/Postgres) to handle server restarts and scaling.
