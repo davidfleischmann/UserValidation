@@ -24,7 +24,7 @@ echo "--------------------------------"
 
 # 1. Create Resource Group
 echo "📦 Creating Resource Group..."
-az group create --name $RESOURCE_GROUP --location $LOCATION
+az group create --name $RESOURCE_GROUP --location $LOCATION --output none
 
 # 2. Create App Service Plan
 echo "🏗️ Creating App Service Plan ($SKU)..."
@@ -32,20 +32,23 @@ echo "🏗️ Creating App Service Plan ($SKU)..."
 az appservice plan create --name "plan-$APP_NAME" \
     --resource-group $RESOURCE_GROUP \
     --sku $SKU \
-    --is-linux
+    --is-linux \
+    --output none
 
 # 3. Create Web App
 echo "🌐 Creating Web App..."
 az webapp create --name $APP_NAME \
     --resource-group $RESOURCE_GROUP \
     --plan "plan-$APP_NAME" \
-    --runtime "NODE:20-lts"
+    --runtime "NODE:20-lts" \
+    --output none
 
 # 4. Configure Startup Command
 echo "⚙️ Configuring Startup Command..."
 az webapp config set --resource-group $RESOURCE_GROUP \
     --name $APP_NAME \
-    --startup-file "npm start"
+    --startup-file "npm start" \
+    --output none
 
 # 5. Configure Deployment from GitHub
 echo "🔗 Connecting to GitHub..."
@@ -53,7 +56,8 @@ az webapp deployment source config --name $APP_NAME \
     --resource-group $RESOURCE_GROUP \
     --repo-url $REPO_URL \
     --branch $BRANCH \
-    --manual-integration # Uses simple git pull, for GitHub Actions remove this and set up separately
+    --manual-integration \
+    --output none # Uses simple git pull, for GitHub Actions remove this and set up separately
 
 echo "--------------------------------"
 echo "✅ Deployment Setup Complete!"
